@@ -1,8 +1,12 @@
 /* global m */
 
+import { get, del } from '../model/todo.mjs'
+
 export default function (vnode) {
-    const oninit = function (vnode) {}
+    const item = m.stream((vnode.attrs.key && get(vnode.attrs.key)) || {})
+    const deleteEvent = () => del(item().id)
     return {
-        oninit
+        item,
+        deleteEvent
     }
 }

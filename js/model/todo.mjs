@@ -19,3 +19,9 @@ export const add = title => {
         })
     )
 }
+
+export const get = id => list().find(item => item.id === id)
+
+export const del = id => {
+    list(list().filter(item => item.id !== id))
+}

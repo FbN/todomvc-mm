@@ -5,15 +5,15 @@ export default (vnode, vm) => ({
         m(
             'li',
             {
-                key: '1'
+                key: vm.item().id
             },
             [
                 m('.view', [
                     m('input.toggle[type=checkbox]', {
                         checked: false
                     }),
-                    m('label', vnode.attrs.title),
-                    m('button.destroy')
+                    m('label', vm.item().title),
+                    m('button.destroy', { onclick: vm.deleteEvent })
                 ]),
                 m('input.edit', {
                     value: 'title'

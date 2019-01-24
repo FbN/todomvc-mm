@@ -39,7 +39,7 @@ export default (vnode, vm) => ({
                 }),
                 m(
                     'ul.todo-list',
-                    vm.list().map(task => m(itemComponent, { ...task }))
+                    vm.list().map(task => m(itemComponent, { key: task.id }))
                 )
             ]
         ),
