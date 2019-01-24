@@ -1,6 +1,7 @@
 /* global m */
 
 import { itemComponent } from '../components.mjs'
+import { footerComponent } from '../components.mjs'
 
 import { compose } from '../lib.mjs'
 
@@ -43,6 +44,6 @@ export default (vnode, vm) => ({
                 )
             ]
         ),
-        '' // footer
+        m(footerComponent)
     ]
 })
