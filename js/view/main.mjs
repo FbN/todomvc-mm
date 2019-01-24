@@ -2,25 +2,17 @@
 
 import { itemComponent } from '../components.mjs'
 import { footerComponent } from '../components.mjs'
-
-import { compose } from '../lib.mjs'
-
-const ENTER_KEY = 13
-const ESC_KEY = 27
-
-const onKeyCode = (keyCode, callback) => e => {
-    e.keyCode === keyCode && callback(e)
-    return e
-}
+import { compose, onEnter, onEsc } from '../lib.mjs'
 
 export default (vnode, vm) => ({
     view: vnode => [
         m('header.header', [
             m('h1', 'todos'),
             m('input.new-todo[placeholder="What needs to be done?"]', {
+                oncreate: vnode => vnode.dom.focus(),
                 onkeyup: compose(
-                    onKeyCode(ENTER_KEY, vm.addEvent),
-                    onKeyCode(ESC_KEY, e => e.target.value = '')
+                    onEnter(vm.addEvent),
+                    onEsc(e => (e.target.value = ''))
                 )
             })
         ]),
