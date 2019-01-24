@@ -5,12 +5,14 @@ export default (vnode, vm) => ({
         m(
             'li',
             {
-                key: vm.item().id
+                key: vm.item().id,
+                class: vm.item().completed ? 'completed' : ''
             },
             [
                 m('.view', [
                     m('input.toggle[type=checkbox]', {
-                        checked: false
+                        onclick: vm.completeEvent,
+                        checked: vm.item().completed
                     }),
                     m('label', vm.item().title),
                     m('button.destroy', { onclick: vm.deleteEvent })
