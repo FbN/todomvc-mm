@@ -9,9 +9,20 @@ export default function (vnode) {
         return e
     }
 
+    const isAllCompleted = () => !list().filter(filter('active')).length
+
+    const completeAllEvent = () =>
+        list(
+            list().map(task =>
+                Object.assign({}, task, { completed: !isAllCompleted() })
+            )
+        )
+
     return {
         list,
         addEvent,
-        filter
+        filter,
+        isAllCompleted,
+        completeAllEvent
     }
 }

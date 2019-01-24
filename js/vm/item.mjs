@@ -1,10 +1,11 @@
 /* global m */
 
-import { get, del, update } from '../model/todo.mjs'
+import { list, get, del, update } from '../model/todo.mjs'
 import { compose } from '../lib.mjs'
 
 export default function (vnode) {
     const item = m.stream((vnode.attrs.key && get(vnode.attrs.key)) || {})
+    list.map(() => item((vnode.attrs.key && get(vnode.attrs.key)) || {}))
     const editing = m.stream(false)
     const editingText = m.stream(item().title)
     const deleteEvent = () => del(item().id)

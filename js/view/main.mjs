@@ -24,9 +24,12 @@ export default (vnode, vm) => ({
                 }
             },
             [
-                m('input#toggle-all.toggle-all[type=checkbox]', {
-                    checked: false
-                }),
+                vm.list().length > 0
+                    ? m('input#toggle-all.toggle-all[type=checkbox]', {
+                        checked: vm.isAllCompleted,
+                        onclick: vm.completeAllEvent
+                    })
+                    : '',
                 m('label', {
                     for: 'toggle-all'
                 }),
