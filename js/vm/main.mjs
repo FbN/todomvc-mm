@@ -1,6 +1,6 @@
 /* global m */
 
-import { list, add } from '../model/todo.mjs'
+import { list, add, filter } from '../model/todo.mjs'
 
 export default function (vnode) {
     const addEvent = e => {
@@ -8,12 +8,6 @@ export default function (vnode) {
         e.target.value = ''
         return e
     }
-
-    const filter = filter => item =>
-        filter
-            ? (filter === 'active' && item.completed === false) ||
-              (filter === 'completed' && item.completed)
-            : true
 
     return {
         list,

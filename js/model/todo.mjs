@@ -29,3 +29,9 @@ export const del = id => {
 export const update = item => {
     list(list().map(i => (i.id === item.id ? item : i)))
 }
+
+export const filter = filter => item =>
+    filter
+        ? (filter === 'active' && item.completed === false) ||
+          (filter === 'completed' && item.completed)
+        : true

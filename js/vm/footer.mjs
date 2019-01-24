@@ -1,9 +1,21 @@
 /* global m */
 
-import { list } from '../model/todo.mjs'
+import { list, filter, del } from '../model/todo.mjs'
 
 export default function (vnode) {
+    const clearEvent = e =>
+        list()
+            .filter(filter('completed'))
+            .map(item => del(item.id))
+            
+    const itemLeft = () =>
+        list()
+            .filter(filter('active'))
+            .length
+
     return {
-        list
+        list,
+        clearEvent,
+        itemLeft
     }
 }

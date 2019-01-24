@@ -5,8 +5,8 @@ export default (vnode, vm) => ({
         vm.list().length > 0
             ? m('footer.footer', [
                 m('span.todo-count', [
-                    m('strong', vm.list().length),
-                    ' item' + (vm.list().length !== 1 ? 's' : '') + ' left'
+                    m('strong', vm.itemLeft()),
+                    ' item' + (vm.itemLeft() !== 1 ? 's' : '') + ' left'
                 ]),
                 m('ul.filters', [
                     m('li', [
@@ -46,7 +46,11 @@ export default (vnode, vm) => ({
                         )
                     ])
                 ]),
-                m('button.clear-completed', 'Clear completed')
+                m(
+                    'button.clear-completed',
+                    { onclick: vm.clearEvent },
+                    'Clear completed'
+                )
             ])
             : ''
 })
