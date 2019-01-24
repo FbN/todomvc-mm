@@ -18,7 +18,7 @@ export default (vnode, vm) => ({
             m('h1', 'todos'),
             m('input.new-todo[placeholder="What needs to be done?"]', {
                 onkeyup: compose(
-                    onKeyCode(ENTER_KEY, e => vm.add(e.target.value)),
+                    onKeyCode(ENTER_KEY, vm.addEvent),
                     onKeyCode(ESC_KEY, e => console.log('esc'))
                 )
             })
