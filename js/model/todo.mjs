@@ -11,6 +11,9 @@ export const list = m.stream(
 list.map(list => localStorage.setItem(STORAGE_ID, JSON.stringify(list)))
 
 export const add = title => {
+    if (!title.trim()) {
+        return
+    }
     list(
         list().concat({
             id: generateUniqueID(),
