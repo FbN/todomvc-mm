@@ -3,5 +3,6 @@
 import { mainComponent } from './components.mjs'
 
 m.route(document.querySelector('.todoapp'), '/', {
-    '/': mainComponent
+    '/': mainComponent,
+    '/:filter': mainComponent
 })
