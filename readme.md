@@ -1,7 +1,6 @@
 # MVVM FPR Mithril • [TodoMVC](http://todomvc.com)
 
-> Official description of the framework (from its website)
-
+The project is an experiment to structure a Mithril 2.x SPA following MVVM pattern and Fuctional reactive programming. [Live demo](https://vibrant-euler-f47c30.netlify.com/#!/)
 
 ## Resources
 
@@ -24,10 +23,8 @@
 
 ## Implementation
 
-The project is an experiment to structure a Mithril 2.x SPA following MVVM pattern and Fuctional reactive programming.
-
 ### Omissis
-To keep it dry no transpiler, JSX or additional library was used. The project is ready to be bowsed with Chrome or another modern ES6 modules compatible browser.
+To keep it dry and minimal no transpiler, JSX or additional library was used. The project is ready to be bowsed with Chrome or another modern ES6 modules compatible browser.
 
 ### Architecture
 
@@ -46,6 +43,9 @@ View Model is prototype scope: every component instance got a new VM Object.
 
 #### Models (folder /js/model)
 Model files are the right place for application business logic. They are ES6 singleton modules. Mithril Stream library is used for data storing and reactive programming.
+
+#### Components Module (file /js/components.mjs)
+This file is where views and vm are glued creating components functions.
 
 ## Credit
 
