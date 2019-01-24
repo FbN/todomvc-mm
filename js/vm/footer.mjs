@@ -15,6 +15,7 @@ export default function (vnode) {
 
     return {
         list,
+        filter,
         clearEvent,
         itemLeft
     }

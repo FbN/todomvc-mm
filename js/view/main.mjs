@@ -9,7 +9,7 @@ export default (vnode, vm) => ({
         m('header.header', [
             m('h1', 'todos'),
             m('input.new-todo[placeholder="What needs to be done?"]', {
-                oncreate: vnode => vnode.dom.focus(),
+                autofocus: true,
                 onkeyup: compose(
                     onEnter(vm.addEvent),
                     onEsc(e => (e.target.value = ''))
