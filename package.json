@@ -1,5 +1,7 @@
 {
     "private": true,
+    "version": "0.1.0",
+    "author": "Fabiano Taioli <ftaioli@gmail.com>",
     "dependencies": {
         "todomvc-app-css": "^2.0.0",
         "todomvc-common": "^1.0.0"
