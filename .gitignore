@@ -4,3 +4,4 @@ www
 .editorconfig
 .eslintrc.json
 .gitattributes
+.tmp

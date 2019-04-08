@@ -1,4 +1,5 @@
-/* global m, localstorage */
+/* localstorage */
+import { m } from '../vendor.mjs'
 
 const STORAGE_ID = 'todos-mvvm-frp-mithril'
 

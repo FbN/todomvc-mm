@@ -1,4 +1,4 @@
-/* global m */
+import { m } from '../vendor.mjs'
 
 export default (vnode, vm) => ({
     view: vnode =>

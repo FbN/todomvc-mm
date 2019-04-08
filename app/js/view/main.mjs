@@ -1,4 +1,4 @@
-/* global m */
+import { m } from '../vendor.mjs'
 
 import { itemComponent } from '../components.mjs'
 import { footerComponent } from '../components.mjs'

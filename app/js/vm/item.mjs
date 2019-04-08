@@ -1,4 +1,4 @@
-/* global m */
+import { m } from '../vendor.mjs'
 
 import { list, get, del, update } from '../model/todo.mjs'
 import { compose } from '../lib.mjs'

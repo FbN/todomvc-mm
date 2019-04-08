@@ -1,4 +1,4 @@
-/* global m */
+import { m } from '../vendor.mjs'
 
 import { compose, onEnter, onEsc } from '../lib.mjs'
 

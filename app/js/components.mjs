@@ -1,4 +1,4 @@
-/* global m */
+import { m } from './vendor.mjs'
 
 import mainView from './view/main.mjs'
 import mainVM from './vm/main.mjs'

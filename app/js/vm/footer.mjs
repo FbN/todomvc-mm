@@ -1,4 +1,4 @@
-/* global m */
+import { m } from '../vendor.mjs'
 
 import { list, filter, del } from '../model/todo.mjs'
 
@@ -7,7 +7,7 @@ export default function (vnode) {
         list()
             .filter(filter('completed'))
             .map(item => del(item.id))
-            
+
     const itemLeft = () =>
         list()
             .filter(filter('active'))

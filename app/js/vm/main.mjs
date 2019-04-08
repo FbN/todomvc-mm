@@ -1,4 +1,4 @@
-/* global m */
+import { m } from '../vendor.mjs'
 
 import { list, add, filter } from '../model/todo.mjs'
 
