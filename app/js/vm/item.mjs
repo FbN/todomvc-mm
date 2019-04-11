@@ -1,47 +1,63 @@
-import { m } from '../vendor.mjs'
+import { m, M } from '../vendor.mjs'
 
 import { list, get, del, update } from '../model/todo.mjs'
-import { compose } from '../lib.mjs'
 
-export default function (vnode) {
-    const item = m.stream((vnode.attrs.key && get(vnode.attrs.key)) || {})
-    list.map(() => item((vnode.attrs.key && get(vnode.attrs.key)) || {}))
-    const editing = m.stream(false)
-    const editingText = m.stream(item().title)
-    const deleteEvent = () => del(item().id)
+export default function itemVM ({ $oninit, $onupdate }, vnodeR) {
+    const [_$keyup, $keyup] = M.createAdapter()
+    const [_$complete, $complete] = M.createAdapter()
+    const [_$editing, $editing] = M.createAdapter()
+    const [_$delete, $delete] = M.createAdapter()
+    const [_$cancelEditing, $cancelEditing] = M.createAdapter()
+    const [_$confirmEditing, $confirmEditing] = M.createAdapter()
+    const [_$listChanged, $listChanged] = M.createAdapter()
 
-    const completeEvent = () =>
-        item(Object.assign({}, item(), { completed: !item().completed })) &&
-        update(item())
+    const $item = M.map(
+        () => (vnodeR.attrs.key && get(vnodeR.attrs.key)) || {},
+        M.startWith({}, $listChanged)
+    )
+    list.map(_$listChanged)
 
-    const editingEvent = () => editing(!editing())
+    const $completeEffect = M.map(item => {
+        const newItem = Object.assign({}, item, { completed: !item.completed })
+        update(newItem)
+        return newItem
+    }, M.sample($item, $complete))
 
-    const cancelEditingEvent = e => {
-        editingText(item().title)
-        editing(false)
-        return false
-    }
+    const $editingText = M.mergeArray([
+        M.map(e => e.target.value, $keyup),
+        M.map(item => item.title, $item),
+        M.map(
+            item => item.title,
+            M.sample($item, M.filter(e => e.keyCode === 27, $keyup))
+        )
+    ])
 
-    const editTextEvent = e => {
-        editingText(e.target.value)
-        return e
-    }
+    const $confirmEditingItem = M.map(newItem => {
+        update(newItem)
+        return newItem
+    }, M.sample(M.combine((text, item) => Object.assign({}, item, { title: text }), $editingText, $item), $confirmEditing))
 
-    const confirmEditingEvent = e => {
-        item(Object.assign({}, item(), { title: editingText() }))
-        update(item())
-        editing(false)
-    }
+    const $editingStatus = M.scan(
+        v => !v,
+        false,
+        M.mergeArray([
+            $editing,
+            $confirmEditingItem,
+            M.filter(e => e.keyCode === 27, $keyup)
+        ])
+    )
 
-    return {
-        item,
-        editing,
-        editingText,
-        deleteEvent,
-        completeEvent,
-        editingEvent,
-        cancelEditingEvent,
-        editTextEvent,
-        confirmEditingEvent
-    }
+    const $itemRes = M.merge($item, $completeEffect, $confirmEditingItem)
+
+    return [
+        {
+            _$keyup,
+            _$complete,
+            _$editing,
+            _$delete,
+            _$cancelEditing,
+            _$confirmEditing
+        },
+        { $item: $itemRes, $editing: $editingStatus, $editingText }
+    ]
 }

@@ -1,40 +1,44 @@
 import { m } from '../vendor.mjs'
 
-import { compose, onEnter, onEsc } from '../lib.mjs'
-
-export default (vnode, vm) => ({
-    view: vnode =>
-        m(
-            'li',
-            {
-                key: vm.item().id,
-                class:
-                    (vm.item().completed ? 'completed' : '') +
-                    (vm.editing() ? ' editing' : '')
-            },
-            [
-                m('.view', [
-                    m('input.toggle[type=checkbox]', {
-                        onclick: vm.completeEvent,
-                        checked: vm.item().completed
-                    }),
-                    m(
-                        'label',
-                        { ondblclick: vm.editingEvent },
-                        vm.item().title
-                    ),
-                    m('button.destroy', { onclick: vm.deleteEvent })
-                ]),
-                m('input.edit', {
-                    onkeyup: compose(
-                        onEsc(vm.cancelEditingEvent),
-                        vm.editTextEvent,
-                        onEnter(vm.confirmEditingEvent)
-                    ),
-                    onupdate: vnode => vm.editing() && vnode.dom.focus(),
-                    onblur: vm.confirmEditingEvent,
-                    value: vm.editingText()
-                })
-            ]
-        )
-})
+export default function itemView (
+    { item, editing, editingText },
+    {
+        _$keyup,
+        _$complete,
+        _$editing,
+        _$delete,
+        _$cancelEditing,
+        _$confirmEditing
+    },
+    vnodeR
+) {
+    return m(
+        'li',
+        {
+            key: item.id,
+            class:
+                (item.completed ? 'completed' : '') +
+                (editing ? ' editing' : '')
+        },
+        [
+            m('.view', [
+                m('input.toggle[type=checkbox]', {
+                    onclick: _$complete,
+                    checked: item.completed
+                }),
+                m('label', { ondblclick: _$editing }, item.title),
+                m('button.destroy', { onclick: _$delete })
+            ]),
+            m('input.edit', {
+                onkeyup: _$keyup,
+                onupdate: vnode => editing && vnode.dom.focus(),
+                onblur: e => editing && _$confirmEditing(e),
+                value: editingText
+            })
+        ]
+    )
+}
+// onkeyup
+// onEsc(vm.cancelEditingEvent),
+// vm.editTextEvent,
+// onEnter(vm.confirmEditingEvent)
