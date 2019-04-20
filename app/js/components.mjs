@@ -16,7 +16,7 @@ const multicastAdapter = () => {
     return [trigger, M.multicast(stream)]
 }
 
-const mm = (initialState, effectStreams, view) => vnode => {
+const mm = (initialState, vm, view) => vnode => {
     const VnodeRecord = new I.Record({
         tag: undefined,
         key: undefined,
@@ -33,7 +33,7 @@ const mm = (initialState, effectStreams, view) => vnode => {
     const [_$onremove, $onremove] = multicastAdapter()
     const [_$done, $done] = multicastAdapter()
 
-    const [triggers, effects] = effectStreams(
+    const [triggers, effects] = vm(
         {
             $oninit,
             $oncreate,
@@ -43,20 +43,48 @@ const mm = (initialState, effectStreams, view) => vnode => {
         VnodeRecord(vnode)
     )
 
-    const keys = Object.keys(effects)
+    // ritorna array con i soli stream inerenti gli stati in ingresso
+    const stateStreams = (stateKeys, effects) =>
+        stateKeys.reduce(
+            (res, key) => res.push(effects['$' + key] || null) && res,
+            []
+        )
 
-    const objState = (...arrStatus) =>
-        Object.fromEntries(arrStatus.map((v, i) => [keys[i].substring(1), v]))
+    // ritorna array con stream non inerenti stati in ingresso
+    const effectStreams = (stateKeys, effects) =>
+        Object.keys(effects)
+            .filter(key => !stateKeys.includes(key.substring(1)))
+            .reduce((res, key) => res.push(effects[key]) && res, [])
+
+    // converte array di risultato stato in una mappa di stati
+    const stateObject = stateKeys => (...arrStatus) =>
+        stateKeys.map((key, index) => [key, index]).reduce((res, entry) => {
+            res[entry[0]] = arrStatus[entry[1]]
+            return res
+        }, {})
+
+    const stateKeys = Object.keys(initialState)
+
+    // M.runEffects(M.until($done, $oninit))
+    // M.runEffects(M.until($done, $oncreate))
+    // M.runEffects(M.until($done, $onupdate))
 
     return {
         oninit: vnode => {
+            // console.log('run effect')
+            //
             M.runEffects(
                 M.until(
                     $done,
-                    M.tap(newState => {
-                        state = StateRecord(newState)
-                        m.redraw()
-                    }, M.combineArray(objState, Object.values(effects)))
+                    M.tap(
+                        m.redraw,
+                        M.merge(
+                            M.tap(newState => {
+                                state = StateRecord(newState)
+                            }, M.combineArray(stateObject(stateKeys), stateStreams(stateKeys, effects))),
+                            M.mergeArray(effectStreams(stateKeys, effects))
+                        )
+                    )
                 ),
                 M.scheduler()
             )

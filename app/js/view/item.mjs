@@ -4,10 +4,10 @@ export default function itemView (
     { item, editing, editingText },
     {
         _$keyup,
+        _$input,
         _$complete,
         _$editing,
         _$delete,
-        _$cancelEditing,
         _$confirmEditing
     },
     vnodeR
@@ -30,7 +30,8 @@ export default function itemView (
                 m('button.destroy', { onclick: _$delete })
             ]),
             m('input.edit', {
-                onkeyup: _$keyup,
+                onkeydown: _$keyup,
+                oninput: _$input,
                 onupdate: vnode => editing && vnode.dom.focus(),
                 onblur: e => editing && _$confirmEditing(e),
                 value: editingText
@@ -38,7 +39,3 @@ export default function itemView (
         ]
     )
 }
-// onkeyup
-// onEsc(vm.cancelEditingEvent),
-// vm.editTextEvent,
-// onEnter(vm.confirmEditingEvent)
