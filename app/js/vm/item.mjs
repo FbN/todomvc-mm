@@ -1,7 +1,8 @@
 import { m, M } from '../vendor.mjs'
 import { list, get, del, update } from '../model/todo.mjs'
 
-export default function itemVM ({ $oninit }, vnodeR) {
+export default function itemVM (vnodeR) {
+    const [_$oninit, $oninit] = M.createAdapter()
     const [_$keyup, $keyup] = M.createAdapter()
     const [_$input, $input] = M.createAdapter()
     const [_$complete, $complete] = M.createAdapter()
@@ -57,6 +58,8 @@ export default function itemVM ({ $oninit }, vnodeR) {
 
     const $deleteItem = M.tap(item => del(item.id), M.sample($item, $delete))
 
+    // const $logUpdate = M.tap(e => console.log('update', e), $onupdate)
+
     return [
         {
             _$keyup,
@@ -64,14 +67,16 @@ export default function itemVM ({ $oninit }, vnodeR) {
             _$complete,
             _$editing,
             _$delete,
-            _$confirmEditing
+            _$confirmEditing,
+            _$oninit
         },
         {
             $item: $itemRes,
             $editing: $editingStatus,
             $editingText,
             $observeList,
-            $deleteItem
+            $deleteItem,
+            $oninit
         }
     ]
 }

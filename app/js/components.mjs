@@ -26,22 +26,16 @@ const mm = (initialState, vm, view) => vnode => {
         dom: undefined
     })
     const StateRecord = new I.Record(initialState || {})
+
     let state = StateRecord()
-    const [_$oninit, $oninit] = multicastAdapter()
-    const [_$oncreate, $oncreate] = multicastAdapter()
-    const [_$onupdate, $onupdate] = multicastAdapter()
-    const [_$onremove, $onremove] = multicastAdapter()
+
     const [_$done, $done] = multicastAdapter()
 
-    const [triggers, effects] = vm(
-        {
-            $oninit,
-            $oncreate,
-            $onupdate,
-            $onremove
-        },
-        VnodeRecord(vnode)
-    )
+    const [triggers, streams] = vm(VnodeRecord(vnode))
+
+    const { _$oninit, _$oncreate, _$onupdate, _$onremove } = triggers
+
+    const { $oninit, $oncreate, $onupdate, $onremove, ...effects } = streams
 
     // ritorna array con i soli stream inerenti gli stati in ingresso
     const stateStreams = (stateKeys, effects) =>
@@ -65,10 +59,6 @@ const mm = (initialState, vm, view) => vnode => {
 
     const stateKeys = Object.keys(initialState)
 
-    // M.runEffects(M.until($done, $oninit))
-    // M.runEffects(M.until($done, $oncreate))
-    // M.runEffects(M.until($done, $onupdate))
-
     return {
         oninit: vnode => {
             // console.log('run effect')
@@ -76,24 +66,31 @@ const mm = (initialState, vm, view) => vnode => {
             M.runEffects(
                 M.until(
                     $done,
-                    M.tap(
-                        m.redraw,
-                        M.merge(
-                            M.tap(newState => {
-                                state = StateRecord(newState)
-                            }, M.combineArray(stateObject(stateKeys), stateStreams(stateKeys, effects))),
-                            M.mergeArray(effectStreams(stateKeys, effects))
+                    M.merge(
+                        M.tap(
+                            m.redraw,
+                            M.merge(
+                                M.tap(newState => {
+                                    state = StateRecord(newState)
+                                }, M.combineArray(stateObject(stateKeys), stateStreams(stateKeys, effects))),
+                                M.mergeArray(effectStreams(stateKeys, effects))
+                            )
+                        ),
+                        M.mergeArray(
+                            [$oninit, $oncreate, $onupdate, $onremove].filter(
+                                e => e
+                            )
                         )
                     )
                 ),
                 M.scheduler()
             )
-            _$oninit(vnode)
+            _$oninit && _$oninit(vnode)
         },
-        oncreate: vnode => _$oncreate(VnodeRecord(vnode)),
-        onupdate: vnode => _$onupdate(VnodeRecord(vnode)),
+        oncreate: vnode => _$oncreate && _$oncreate(VnodeRecord(vnode)),
+        onupdate: vnode => _$onupdate && _$onupdate(VnodeRecord(vnode)),
         onremove: vnode => {
-            _$onremove(VnodeRecord(vnode))
+            _$onremove && _$onremove(VnodeRecord(vnode))
             _$done(true)
         },
         view: vnode => view(state, triggers, VnodeRecord(vnode))
