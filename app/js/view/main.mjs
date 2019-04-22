@@ -2,18 +2,20 @@ import { m } from '../vendor.mjs'
 
 import { itemComponent } from '../components.mjs'
 import { footerComponent } from '../components.mjs'
-import { compose, onEnter, onEsc } from '../lib.mjs'
 
-export default (vnode, vm) => ({
-    view: vnode => [
+export default function itemView (
+    { isAllCompleted, tasks, txt },
+    { _$add, _$completeAllEvent, _$keyup, _$input },
+    vnodeR
+) {
+    return [
         m('header.header', [
             m('h1', 'todos'),
             m('input.new-todo[placeholder="What needs to be done?"]', {
                 autofocus: true,
-                onkeyup: compose(
-                    onEnter(vm.addEvent),
-                    onEsc(e => (e.target.value = ''))
-                )
+                onkeyup: _$keyup,
+                oninput: _$input,
+                value: txt
             })
         ]),
         m(
@@ -24,10 +26,10 @@ export default (vnode, vm) => ({
                 }
             },
             [
-                vm.list().length > 0
+                tasks.length > 0
                     ? m('input#toggle-all.toggle-all[type=checkbox]', {
-                        checked: vm.isAllCompleted,
-                        onclick: vm.completeAllEvent
+                        checked: isAllCompleted,
+                        onclick: _$completeAllEvent
                     })
                     : '',
                 m('label', {
@@ -35,13 +37,12 @@ export default (vnode, vm) => ({
                 }),
                 m(
                     'ul.todo-list',
-                    vm
-                        .list()
-                        .filter(vm.filter(m.route.param('filter')))
-                        .map(task => m(itemComponent, { key: task.id }))
+                    tasks.map(task =>
+                        m(itemComponent, { key: task.id })
+                    )
                 )
             ]
         ),
         m(footerComponent)
     ]
-})
+}

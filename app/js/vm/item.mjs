@@ -1,22 +1,10 @@
 import { m, M } from '../vendor.mjs'
 import { list, get, del, update } from '../model/todo.mjs'
-
-const makeAdapters = nameList =>
-    nameList.reduce(
-        (streamsAndTriggers, name) => {
-            ;[
-                streamsAndTriggers.triggers['_$' + name],
-                streamsAndTriggers.streams['$' + name]
-            ] = M.createAdapter()
-            return streamsAndTriggers
-        },
-        { streams: {}, triggers: {} }
-    )
+import { adapters } from '../mm.mjs'
 
 export default function itemVM (vnodeR) {
-    const { streams: S, triggers: T } = makeAdapters([
+    const { streams: S, triggers: T } = adapters([
         'oninit',
-        'onupdate',
         'keyup',
         'input',
         'complete',
@@ -73,8 +61,6 @@ export default function itemVM (vnodeR) {
 
     const $deleteItem = M.tap(item => del(item.id), M.sample($item, S.$delete))
 
-    const $logUpdate = M.tap(e => console.log('update', e), S.$onupdate)
-
     return [
         T,
         {
@@ -83,8 +69,7 @@ export default function itemVM (vnodeR) {
             $editingText,
             $observeList,
             $deleteItem,
-            $oninit: $observeList,
-            $onupdate: $logUpdate
+            $oninit: $observeList
         }
     ]
 }
