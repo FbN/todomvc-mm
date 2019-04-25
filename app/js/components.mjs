@@ -34,4 +34,11 @@ export const itemComponent = mm(
     itemVM,
     itemView
 )
-export const footerComponent = vmComponent(footerView, footerVM)
+export const footerComponent = mm(
+    {
+        tasks: [],
+        itemLeft: 0
+    },
+    footerVM,
+    footerView
+)

@@ -1,6 +1,9 @@
 import { m, I, M } from './vendor.mjs'
 export { mm, adapters, route }
 
+const [_$app, $app] = M.createAdapter()
+M.runEffects(M.join($app), M.scheduler())
+
 function route(data) {
     if (data) {
         if (typeof route.stream === 'undefined') {
@@ -64,9 +67,10 @@ const mm = (initialState, vm, view) => vnode => {
 
     return {
         oninit: vnode => {
-            // console.log('run effect')
+            //console.log('INIT', initialState)
             //
-            M.runEffects(
+            // M.runEffects(
+            _$app(
                 M.until(
                     $done,
                     M.merge(
@@ -85,9 +89,11 @@ const mm = (initialState, vm, view) => vnode => {
                             )
                         )
                     )
-                ),
-                M.scheduler()
+                )
             )
+            // ,
+            // M.scheduler()
+            // )
             _$oninit && _$oninit(vnode)
         },
         oncreate: vnode => _$oncreate && _$oncreate(VnodeRecord(vnode)),

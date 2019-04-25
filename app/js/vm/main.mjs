@@ -1,14 +1,13 @@
 import { m, M } from '../vendor.mjs'
-import { list, add, filter } from '../model/todo.mjs'
+import { _$add, $list, filter } from '../model/todo.mjs'
 import { adapters, route } from '../mm.mjs'
-
+window.m = m
 export default function itemVM (vnodeR) {
     const $route = route()
 
     const { streams: S, triggers: T } = adapters([
         'add',
         'completeAllEvent',
-        'oninit',
         'tasks',
         'keyup',
         'input'
@@ -23,17 +22,13 @@ export default function itemVM (vnodeR) {
     )
 
     const $addEffect = M.tap(
-        add,
+        _$add,
         M.sample(M.map(e => e.target.value, S.$input), $enter)
     )
 
-    const $observeList = M.tap(() => {
-        list.map(T._$tasks)
-    }, S.$oninit)
-
     const $isAllCompleted = M.map(
         list => !list.filter(filter('active')).length,
-        S.$tasks
+        $list
     )
 
     const $cae = M.tap(
@@ -47,12 +42,10 @@ export default function itemVM (vnodeR) {
     )
 
     const $filteredTasks = M.snapshot(
-        (list, { args: { filter: type } }) => {
-            console.log('-> route', type)
-            return type ? list.filter(filter(type)) : list
-        },
-        S.$tasks,
-        M.sample($route, M.merge(S.$tasks, $route))
+        (list, { args: { filter: type } }) =>
+            type ? list.filter(filter(type)) : list,
+        $list,
+        M.sample($route, M.merge($list, $route))
     )
 
     return [
@@ -62,7 +55,6 @@ export default function itemVM (vnodeR) {
             $isAllCompleted,
             $txt: M.startWith('', $editingText),
             $cae,
-            $oninit: $observeList,
             $addEffect
         }
     ]
