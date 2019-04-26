@@ -1,10 +1,10 @@
 import { m, M } from '../vendor.mjs'
-import { _$update, _$del, _$get, $list} from '../model/todo.mjs'
+import { _$update, _$del, $list, enter, esc } from '../model/todo.mjs'
 import { adapters } from '../mm.mjs'
 
 export default function itemVM (vnodeR) {
+    console.log('ON INIT', vnodeR)
     const { streams: S, triggers: T } = adapters([
-        'oninit',
         'keyup',
         'input',
         'complete',
@@ -13,23 +13,24 @@ export default function itemVM (vnodeR) {
         'confirmEditing'
     ])
 
-    const $enter = M.filter(e => e.keyCode === 13, S.$keyup)
-    const $esc = M.filter(e => e.keyCode === 27, S.$keyup)
+    const $esc = esc(S.$keyup)
 
-    const $confirmOnEnter = M.merge(S.$confirmEditing, $enter)
+    const $confirmOnEnter = M.merge(S.$confirmEditing, enter(S.$keyup))
 
-    const $item = M.tap(
-        v => console.log('item', v),
+    const $item = M.startWith(
+        vnodeR.attrs.item,
         M.map(
             list => list.find(item => item.id === vnodeR.attrs.key) || {},
             $list
         )
     )
+
     const $completeEffect = M.tap(
         _$update,
-        M.map(item => {
-            return Object.assign({}, item, { completed: !item.completed })
-        }, M.sample($item, S.$complete))
+        M.map(
+            item => Object.assign({}, item, { completed: !item.completed }),
+            M.sample($item, S.$complete)
+        )
     )
 
     const $editingText = M.mergeArray([
@@ -69,8 +70,7 @@ export default function itemVM (vnodeR) {
             $item: $itemRes,
             $editing: $editingStatus,
             $editingText,
-            $deleteItem,
-            $oninit: M.tap(_$get, S.$oninit)
+            $deleteItem
         }
     ]
 }

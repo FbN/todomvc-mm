@@ -1,7 +1,7 @@
 import { m } from '../vendor.mjs'
 
 export default function itemView ({ tasks, itemLeft }, { _$clear }, vnodeR) {
-    console.log('tasks', tasks, itemLeft)
+    // console.log('tasks', tasks, itemLeft)
     return tasks.length > 0
         ? m('footer.footer', [
             m('span.todo-count', [

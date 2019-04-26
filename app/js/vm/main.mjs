@@ -1,5 +1,5 @@
 import { m, M } from '../vendor.mjs'
-import { _$add, $list, filter } from '../model/todo.mjs'
+import { _$add, $list, filter, enter, esc } from '../model/todo.mjs'
 import { adapters, route } from '../mm.mjs'
 window.m = m
 export default function itemVM (vnodeR) {
@@ -13,8 +13,7 @@ export default function itemVM (vnodeR) {
         'input'
     ])
 
-    const $enter = M.filter(e => e.keyCode === 13, S.$keyup)
-    const $esc = M.filter(e => e.keyCode === 27, S.$keyup)
+    const $enter = enter(S.$keyup)
 
     const $editingText = M.merge(
         M.map(e => e.target.value, S.$input),

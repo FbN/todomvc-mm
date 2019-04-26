@@ -38,7 +38,7 @@ export default function itemView (
                 m(
                     'ul.todo-list',
                     tasks.map(task =>
-                        m(itemComponent, { key: task.id })
+                        m(itemComponent, { key: task.id, item: task })
                     )
                 )
             ]
