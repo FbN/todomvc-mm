@@ -5,7 +5,7 @@ import { footerComponent } from '../components.mjs'
 
 export default function itemView (
     { isAllCompleted, tasks, txt },
-    { _$add, _$completeAllEvent, _$keyup, _$input },
+    { _$add, _$togleAll, _$keyup, _$input },
     vnodeR
 ) {
     return [
@@ -29,7 +29,7 @@ export default function itemView (
                 tasks.length > 0
                     ? m('input#toggle-all.toggle-all[type=checkbox]', {
                         checked: isAllCompleted,
-                        onclick: _$completeAllEvent
+                        onclick: _$togleAll
                     })
                     : '',
                 m('label', {

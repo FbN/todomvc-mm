@@ -1,26 +1,20 @@
 import { m, M } from '../vendor.mjs'
-import { _$del, $list, filter } from '../model/todo.mjs'
+import { T as TodoT, $list } from '../model/todo.mjs'
 import { adapters } from '../mm.mjs'
 
-export default function itemVM (vnodeR) {
-    const { streams: S, triggers: T } = adapters(['tasks', 'clear'])
+export default function itemVM(vnodeR) {
+    const { streams: S, triggers: T } = adapters(['tasks'])
 
-    const $itemLeft = M.map(list => list.filter(filter('active')).length, $list)
-
-    // const $clear = M.tap(
-    //     list => list.map(e => e.id).forEach(_$del),
-    //     M.map(
-    //         list => list.filter(filter('completed')),
-    //         M.sample($list, S.$clear)
-    //     )
-    // )
+    const $itemLeft = M.map(
+        list => list.filter(task => !task.completed).length,
+        $list
+    )
 
     return [
-        T,
+        { ...T, _$clear: TodoT._$clear },
         {
             $tasks: $list,
-            $itemLeft //,
-            // $clear
+            $itemLeft
         }
     ]
 }

@@ -1,15 +1,18 @@
 /* localstorage */
 import { m, M } from '../vendor.mjs'
-export { _$add, _$del, _$update, $list, filter, enter, esc }
+import { adapters } from '../mm.mjs'
+export { T, $list, allCompleted, enter, esc }
 const STORAGE_ID = 'mm'
 
 const generateUniqueID = () => new Date().getTime()
 
-const [_$set, $set] = M.createAdapter()
-const [_$add, $add] = M.createAdapter()
-const [_$del, $del] = M.createAdapter()
-const [_$update, $update] = M.createAdapter()
-const [_$last, $last] = M.createAdapter()
+const { streams: S, triggers: T } = adapters([
+    'add',
+    'del',
+    'update',
+    'clear',
+    'togleAll'
+])
 
 const $listAdd = M.map(
     title => list =>
@@ -18,33 +21,52 @@ const $listAdd = M.map(
             title: title.trim(),
             completed: false
         }),
-    $add
+    S.$add
 )
 
-const $listDel = M.map(id => list => list.filter(item => item.id !== id), $del)
+const $listDel = M.map(
+    id => list => list.filter(item => item.id !== id),
+    S.$del
+)
 
-const $listSet = M.map(
-    newList => list => newList,
-    M.startWith(JSON.parse(localStorage.getItem(STORAGE_ID)) || [], $set)
+const $listClear = M.map(
+    () => list => list.filter(item => !item.completed),
+    S.$clear
+)
+
+const $listToggle = M.map(
+    () => list => {
+        const completed = allCompleted(list)
+        return list.map(task =>
+            Object.assign({}, task, { completed: !completed })
+        )
+    },
+    S.$togleAll
 )
 
 const $listUpdate = M.map(
     item => list => list.map(i => (i.id === item.id ? item : i)),
-    $update
+    S.$update
 )
 
 const $list = M.multicast(
-    M.tap(list => {
-        localStorage.setItem(STORAGE_ID, JSON.stringify(list))
-        return list
-    }, M.scan((list, f) => f(list), [], M.mergeArray([$listSet, $listAdd, $listDel, $listUpdate])))
+    M.tap(
+        list => localStorage.setItem(STORAGE_ID, JSON.stringify(list)),
+        M.scan(
+            (list, f) => f(list),
+            JSON.parse(localStorage.getItem(STORAGE_ID)) || [],
+            M.mergeArray([
+                $listToggle,
+                $listAdd,
+                $listDel,
+                $listUpdate,
+                $listClear
+            ])
+        )
+    )
 )
 
-const filter = filter => item =>
-    filter
-        ? (filter === 'active' && item.completed === false) ||
-          (filter === 'completed' && item.completed)
-        : true
+const allCompleted = list => !!list.filter(task => task.completed).length
 
 const enter = stream => M.filter(e => e.keyCode === 13, stream)
 const esc = stream => M.filter(e => e.keyCode === 27, stream)

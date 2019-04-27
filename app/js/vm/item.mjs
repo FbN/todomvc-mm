@@ -1,5 +1,5 @@
 import { m, M } from '../vendor.mjs'
-import { _$update, _$del, $list, enter, esc } from '../model/todo.mjs'
+import { T as TodoT, $list, enter, esc } from '../model/todo.mjs'
 import { adapters } from '../mm.mjs'
 
 export default function itemVM (vnodeR) {
@@ -26,7 +26,7 @@ export default function itemVM (vnodeR) {
     )
 
     const $completeEffect = M.tap(
-        _$update,
+        TodoT._$update,
         M.map(
             item => Object.assign({}, item, { completed: !item.completed }),
             M.sample($item, S.$complete)
@@ -40,7 +40,7 @@ export default function itemVM (vnodeR) {
     ])
 
     const $confirmEditingItem = M.tap(
-        _$update,
+        TodoT._$update,
         M.sample(
             M.combine(
                 (text, item) => Object.assign({}, item, { title: text }),
@@ -60,7 +60,7 @@ export default function itemVM (vnodeR) {
     const $itemRes = M.merge($item, $completeEffect, $confirmEditingItem)
 
     const $deleteItem = M.tap(
-        item => _$del(item.id),
+        item => TodoT._$del(item.id),
         M.sample($item, S.$delete)
     )
 

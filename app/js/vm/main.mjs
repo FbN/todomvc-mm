@@ -1,13 +1,17 @@
 import { m, M } from '../vendor.mjs'
-import { _$add, $list, filter, enter, esc } from '../model/todo.mjs'
+import {
+    T as TodoT,
+    $list,
+    allCompleted,
+    enter,
+    esc
+} from '../model/todo.mjs'
 import { adapters, route } from '../mm.mjs'
 window.m = m
-export default function itemVM (vnodeR) {
+export default function itemVM(vnodeR) {
     const $route = route()
 
     const { streams: S, triggers: T } = adapters([
-        'add',
-        'completeAllEvent',
         'tasks',
         'keyup',
         'input'
@@ -21,39 +25,25 @@ export default function itemVM (vnodeR) {
     )
 
     const $addEffect = M.tap(
-        _$add,
+        TodoT._$add,
         M.sample(M.map(e => e.target.value, S.$input), $enter)
-    )
-
-    const $isAllCompleted = M.map(
-        list => !list.filter(filter('active')).length,
-        $list
-    )
-
-    const $cae = M.tap(
-        () =>
-            list(
-                list().map(task =>
-                    Object.assign({}, task, { completed: !isAllCompleted() })
-                )
-            ),
-        S.$completeAllEvent
     )
 
     const $filteredTasks = M.snapshot(
         (list, { args: { filter: type } }) =>
-            type ? list.filter(filter(type)) : list,
+            type
+                ? list.filter(task => task.completed == (type === 'completed'))
+                : list,
         $list,
         M.sample($route, M.merge($list, $route))
     )
 
     return [
-        T,
+        { ...T, _$togleAll: TodoT._$togleAll },
         {
             $tasks: $filteredTasks,
-            $isAllCompleted,
+            $isAllCompleted: M.map(allCompleted, $list),
             $txt: M.startWith('', $editingText),
-            $cae,
             $addEffect
         }
     ]
