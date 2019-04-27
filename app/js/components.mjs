@@ -9,12 +9,9 @@ import itemVM from './vm/item.mjs'
 import footerView from './view/footer.mjs'
 import footerVM from './vm/footer.mjs'
 
-import { deepFreezeCopy } from './lib.mjs'
-
 import { mm } from './mm.mjs'
 
-const vmComponent = (view, vmFactory) => vnode =>
-    view(vnode, deepFreezeCopy(vmFactory(vnode)))
+const vmComponent = (view, vmFactory) => vnode => view(vnode, vmFactory(vnode))
 
 export const mainComponent = mm(
     {

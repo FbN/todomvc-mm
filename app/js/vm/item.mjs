@@ -3,7 +3,6 @@ import { T as TodoT, $list, enter, esc } from '../model/todo.mjs'
 import { adapters } from '../mm.mjs'
 
 export default function itemVM (vnodeR) {
-    console.log('ON INIT', vnodeR)
     const { streams: S, triggers: T } = adapters([
         'keyup',
         'input',

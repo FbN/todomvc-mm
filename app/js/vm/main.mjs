@@ -7,7 +7,7 @@ import {
     esc
 } from '../model/todo.mjs'
 import { adapters, route } from '../mm.mjs'
-window.m = m
+
 export default function itemVM(vnodeR) {
     const $route = route()
 

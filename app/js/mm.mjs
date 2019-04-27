@@ -43,20 +43,17 @@ const mm = (initialState, vm, view) => vnode => {
 
     const { $oninit, $oncreate, $onupdate, $onremove, ...effects } = streams
 
-    // ritorna array con i soli stream inerenti gli stati in ingresso
     const stateStreams = (stateKeys, effects) =>
         stateKeys.reduce(
             (res, key) => res.push(effects['$' + key] || null) && res,
             []
         )
 
-    // ritorna array con stream non inerenti stati in ingresso
     const effectStreams = (stateKeys, effects) =>
         Object.keys(effects)
             .filter(key => !stateKeys.includes(key.substring(1)))
             .reduce((res, key) => res.push(effects[key]) && res, [])
 
-    // converte array di risultato stato in una mappa di stati
     const stateObject = stateKeys => (...arrStatus) =>
         stateKeys.map((key, index) => [key, index]).reduce((res, entry) => {
             res[entry[0]] = arrStatus[entry[1]]
@@ -67,9 +64,6 @@ const mm = (initialState, vm, view) => vnode => {
 
     return {
         oninit: vnode => {
-            //console.log('INIT', initialState)
-            //
-            // M.runEffects(
             _$app(
                 M.until(
                     $done,
@@ -91,9 +85,6 @@ const mm = (initialState, vm, view) => vnode => {
                     )
                 )
             )
-            // ,
-            // M.scheduler()
-            // )
             _$oninit && _$oninit(vnode)
         },
         oncreate: vnode => _$oncreate && _$oncreate(VnodeRecord(vnode)),
