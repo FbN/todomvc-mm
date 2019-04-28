@@ -23,7 +23,7 @@ The project is an experiment to structure a Mithril 2.x SPA following MVVM patte
 
 ## Implementation
 
-See blog post
+[See blog post](https://medium.com/@ftaioli/spa-functional-reactive-programming-60fe13639f33)
 
 ## Credit
 
